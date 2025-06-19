@@ -4,7 +4,7 @@ from yahoo_oauth import OAuth2
 def save_match_result(output_path, league_key, week):
     print(f'running week {week} result')
 
-    oauth = OAuth2(None, None, from_file='oauth.json')
+    oauth = OAuth2(None, None, from_file='/Users/carleano/Desktop/includeOauthFantasy/oauth.json')
     if not oauth.token_is_valid():
         oauth.refresh_access_token()
 
@@ -68,8 +68,8 @@ if __name__ == '__main__':
 
     if do_single_week_result == 0:
         for week in range(1,20):
-            output_csv_path = f'/Users/carleano/Desktop/fantasy-stats-app/public/data/week{week}.csv'
+            output_csv_path = f'/Users/carleano/Desktop/includeOauthFantasy/fantasy-stats-app/public/data/week{week}.csv'
             save_match_result(output_csv_path, league_key, week)
     else:
-        output_csv_path = f'/Users/carleano/Desktop/fantasy-stats-app/public/data/week{single_week}.csv'
+        output_csv_path = f'/Users/carleano/Desktop/includeOauthFantasy/fantasy-stats-app/public/data/week{single_week}.csv'
         save_match_result(output_csv_path, league_key, single_week)
