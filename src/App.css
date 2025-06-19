@@ -1,13 +1,372 @@
 .App {
-  text-align: center;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center; 
+  margin: 0 auto; 
+  max-width: 1300px;
 }
 
-.App-logo {
+.Title {
+  /* 字體與顏色 */
+  font-family: 'Microsoft JhengHei', '微軟正黑體', 'PingFang TC', '蘋方-繁', sans-serif;
+  color: #6D4C41; /* 使用比按鈕文字更深的濃郁棕色 */
+  font-size: 2.5rem; /* 讓標題稍微再大一點 */
+  font-weight: 700;
+  letter-spacing: 1px; /* 增加文字間距，看起來更開闊大氣 */
+  
+  /* 陰影與立體感 - 核心 */
+  text-shadow: 1px 1px 0px #F5E8C7, /* 淺色內陰影，呼應按鈕的高光色 */
+               0 4px 6px rgba(0, 0, 0, 0.2); /* 主要的環境陰影，製造深度 */
+
+  /* 其他 */
+  width: 100%; 
+  text-align: center;
+  margin-bottom: 1.5rem; /* 稍微增加和下方控制列的距離 */
+}
+
+
+/* 表格的容器，負責處理滾動條和寬度 */
+.table-container {
+  width: 100%; /* <-- 這會讓容器撐滿 .App 的寬度 */
+  overflow-x: auto; /* 當內容超出時，只在水平方向顯示滾動條 */
+  margin-top: 1.5rem; /* 和標題之間增加一些間距 */
+}
+
+/* 主要的表格樣式 */
+.stats-table {
+  width: 100%; /* <-- 關鍵！讓表格本身也撐滿容器寬度 */
+  border-collapse: collapse; /* 讓儲存格的邊框合併，看起來更簡潔 */
+  table-layout: auto; /* 瀏覽器會根據內容自動調整欄寬 */
+  border: 1px solid #d1d5db;  /* 使用和表頭一樣的顏色，看起來最協調 */
+}
+
+/* 表頭儲存格 (th) 的樣式 */
+.stats-table th {
+  background-color: #f3f4f6; /* 對應 bg-gray-100 */
+  padding: 0.5rem 0.75rem; /* 大約是 px-2 py-1 的大小，可微調 */
+  border: 1px solid #d1d5db; /* 對應 border-gray-300 */
+  font-weight: 600; /* 讓表頭文字粗一點 */
+}
+
+/* 表格內容儲存格 (td) 的樣式 */
+.stats-table td {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #e5e7eb; /* 對應 border-gray-200 */
+  font-size: 0.875rem; /* 對應 text-sm */
+  text-align: center; /* 對應 text-center */
+}
+
+/* 讓可排序的表頭在滑鼠移上去時顯示為可點擊的手指圖示 */
+.stats-table th.sortable {
+  cursor: pointer;
+  user-select: none; /* 防止點擊時選取到文字 */
+  position: relative; /* 為了讓箭頭定位 */
+}
+
+/* 當前排序的欄位，給予不同的背景色以突顯 */
+.stats-table th.sorted-by {
+  background-color: #e5e7eb; /* 比原本的表頭顏色深一點 */
+}
+
+/* 排序箭頭的樣式 (可選，目前只是簡單的文字) */
+.stats-table th.sortable span {
+  font-size: 0.8em;
+  padding-left: 0.3rem;
+}
+
+/* --- 您新增的儲存格突顯樣式 --- */
+.stats-table td.highlight-cell {
+  background-color: #fef08a; /* 一個柔和的黃色，易於閱讀 */
+  font-weight: bold;
+  color: #422006; /* 深色文字確保在黃色背景上的可讀性 */
+}
+
+/* 滑鼠懸停在表格行 (tr) 上的效果 */
+.stats-table tbody tr:hover {
+  background-color: #f9fafb; /* 對應 hover:bg-gray-50 */
+}
+
+/* 這是「選擇週次」標籤的樣式 */
+/* 更新這個容器，加入 flex 和 gap */
+.week-selector-container {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem; /* 【新增】這會在 label 和選擇器之間產生間隔 */
+}
+
+/* 這是「選擇週次」標籤的樣式 */
+.week-selector-container label {
+  font-family: 'Microsoft JhengHei', '微軟正黑體', 'PingFang TC', '蘋方-繁', sans-serif;
+  font-weight: 600;
+  color: #5D4037;
+  font-size: 1rem;
+}
+
+/* 【修改】這是 <select> 下拉選單本身的新樣式，加入了 3D 效果 */
+.week-selector {
+  /* 字體與顏色 (維持不變) */
+  font-family: 'Microsoft JhengHei', '微軟正黑體', 'PingFang TC', '蘋方-繁', sans-serif;
+  font-weight: 600;
+  color: #5D4037;
+
+  /* 外觀與邊框 (維持不變) */
+  border: 1px solid #A1887F;
+  border-radius: 8px;
+  padding: 0.6rem 2.5rem 0.6rem 1.2rem;
+  cursor: pointer;
+
+  /* 移除瀏覽器預設樣式 */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+
+  /* 【核心修改】將箭頭和漸層分離為兩個背景 */
+  background-image:
+    /* 第1層：箭頭圖示 (保持不變) */
+    url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%235D4037%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22/%3E%3C/svg%3E'),
+    /* 第2層：漸層背景 */
+    linear-gradient(to bottom, #F5E8C7, #E4D4A9);
+
+  background-repeat: no-repeat;
+  /* 分別設定兩個背景的位置 */
+  background-position: right 1rem center, 0 0;
+  /* 分別設定兩個背景的大小 */
+  background-size: 0.8em, 100%;
+
+  /* 3D 效果 */
+  box-shadow: 0 4px 0 #C8B68E;
+  transition: all 0.1s ease-in-out;
+}
+
+.week-selector:hover {
+  /* 【核心修改】只更新漸層背景，不影響箭頭 */
+  background-image:
+    /* 第1層：箭頭圖示 (維持不變) */
+    url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%235D4037%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22/%3E%3C/svg%3E'),
+    /* 第2層：新的漸層背景 */
+    linear-gradient(to bottom, #FFF3DB, #F0E2B9);
+}
+
+
+.controls-container {
+  display: flex;
+  align-items: center; /* 讓兩個項目在垂直方向上置中對齊 */
+  gap: 1rem; /* 在「選擇週次」和「Power Ranking按鈕」之間增加一些間距 */
+  margin-bottom: 1rem; /* 讓整個控制列和下方的表格之間有點距離 */
+}
+
+/* 您也可以為按鈕本身加點樣式，讓它更好看 */
+.power-ranking-button {
+  /* 字體與邊框 */
+  font-family: 'Microsoft JhengHei', '微軟正黑體', 'PingFang TC', '蘋方-繁', sans-serif; /* 使用更適合中文的字體 */
+  font-weight: 600; /* 略粗的字重 */
+  color: #5D4037; /* 深棕色文字，比黑色柔和 */
+  border: 1px solid #A1887F; /* 帶有土色調的邊框 */
+  border-radius: 8px; /* 圓角大小 */
+  padding: 0.6rem 1.2rem; /* 調整按鈕大小 */
+  cursor: pointer;
+
+  /* 背景與3D效果 - 核心 */
+  background: linear-gradient(to bottom, #F5E8C7, #E4D4A9); /* 從亮土黃到深土黃的漸層 */
+  box-shadow: 0 4px 0 #C8B68E, /* 這是創造3D厚度的關鍵底部陰影 */
+              0 5px 8px rgba(0, 0, 0, 0.2); /* 整體環境陰影 */
+
+  /* 動畫效果 */
+  transition: all 0.1s ease-in-out;
+}
+
+.power-ranking-button:hover {
+  background: linear-gradient(to bottom, #FFF3DB, #F0E2B9); /* 滑鼠移上去時變亮 */
+}
+
+.power-ranking-button:active {
+  /* 按下時的效果 */
+  transform: translateY(2px); /* 按鈕向下移動2像素，產生按下的感覺 */
+  box-shadow: 0 2px 0 #C8B68E, /* 按下時，3D厚度陰影變短 */
+              0 3px 4px rgba(0, 0, 0, 0.2); /* 整體陰影也變短變深 */
+}
+
+.player-filter-button {
+  /* 字體與邊框 */
+  font-family: 'Microsoft JhengHei', '微軟正黑體', 'PingFang TC', '蘋方-繁', sans-serif;
+  font-weight: 600;
+  color: #5D4037;
+  border: 1px solid #A1887F;
+  border-radius: 8px;
+  padding: 0.6rem 1.2rem;
+  cursor: pointer;
+  white-space: nowrap; /* 確保文字不會換行 */
+
+  /* 背景與3D效果 */
+  background: linear-gradient(to bottom, #F5E8C7, #E4D4A9);
+  box-shadow: 0 4px 0 #C8B68E,
+              0 5px 8px rgba(0, 0, 0, 0.2);
+
+  /* 動畫效果 */
+  transition: all 0.1s ease-in-out;
+}
+
+.player-filter-button:hover {
+  background: linear-gradient(to bottom, #FFF3DB, #F0E2B9);
+}
+
+.player-filter-button:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 #C8B68E,
+              0 3px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* 浮動視窗的半透明背景 */
+.modal-backdrop {
+  position: fixed; /* 固定在畫面上 */
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5); /* 半透明黑色 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* 確保在最上層 */
+}
+
+/* 浮動視窗的內容區塊 */
+.modal-content {
+  background: #efe9d9; /* 比主背景稍深一點的杏色，創造層次感 */
+  color: #333; /* 確保文字是深色的以便閱讀 */
+  padding: 2rem;
+  border-radius: 8px;
+  border: 1px solid #EAE0C8; /* 搭配的邊框顏色 */
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 這是浮動視窗內的球員列表樣式 */
+.player-filter-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  overflow-y: auto; /* 當球員過多時，內部會產生滾動條 */
+  margin-top: 1rem;
+}
+
+.player-filter-list li {
+  padding: 0.25rem 0.5rem;
+}
+
+.player-filter-list li label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+/* 這是浮動視窗內的「全部勾選/取消」按鈕容器 */
+.player-filter-actions {
+  display: flex;
+  gap: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+.player-filter-actions button {
+  /* 字體與邊框 */
+  font-family: 'Microsoft JhengHei', '微軟正黑體', 'PingFang TC', '蘋方-繁', sans-serif;
+  font-weight: 600;
+  color: #5D4037;
+  border: 1px solid #A1887F;
+  border-radius: 8px;
+  padding: 0.6rem 1.2rem;
+  cursor: pointer;
+  white-space: nowrap; /* 確保文字不會換行 */
+
+  /* 背景與3D效果 */
+  background: linear-gradient(to bottom, #F5E8C7, #E4D4A9);
+  box-shadow: 0 4px 0 #C8B68E;
+
+  /* 動畫效果 */
+  transition: all 0.1s ease-in-out;
+}
+
+.player-filter-actions button:hover {
+  background: linear-gradient(to bottom, #FFF3DB, #F0E2B9);
+}
+
+.player-filter-actions button:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 #C8B68E;
+}
+
+/* 「?」按鈕的樣式，直接套用和其他按鈕一樣的風格 */
+.help-button {
+  /* 字體與邊框 */
+  font-family: 'Microsoft JhengHei', '微軟正黑體', 'PingFang TC', '蘋方-繁', sans-serif;
+  font-weight: bold; /* 加粗讓問號更顯眼 */
+  color: #5D4037;
+  border: 1px solid #A1887F;
+  border-radius: 8px;
+  padding: 0.6rem 1rem; /* 讓按鈕趨近方形 */
+  cursor: pointer;
+  line-height: 1; /* 確保問號垂直置中 */
+
+  /* 背景與3D效果 */
+  background: linear-gradient(to bottom, #F5E8C7, #E4D4A9);
+  box-shadow: 0 4px 0 #C8B68E,
+              0 5px 8px rgba(0, 0, 0, 0.2);
+
+  /* 動畫效果 */
+  transition: all 0.1s ease-in-out;
+}
+
+.help-button:hover {
+  background: linear-gradient(to bottom, #FFF3DB, #F0E2B9);
+}
+
+.help-button:active {
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 #C8B68E,
+              0 3px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* 使用說明浮動視窗的標題 */
+.modal-title {
+  margin-top: 0;
+  color: #3E3B3B;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+/* 使用說明內容 */
+.help-content ul {
+  padding-left: 20px;
+  line-height: 1.6;
+}
+
+.help-content ul li {
+  margin-bottom: 1rem;
+}
+
+.help-content ul ul {
+  margin-top: 0.5rem;
+}
+
+/* 浮動視窗底部的「關閉」按鈕容器 */
+.modal-footer {
+  margin-top: 2rem;
+  text-align: right;
+  border-top: 1px solid #eee;
+  padding-top: 1rem;
+}
+
+/* .App-logo {
   height: 40vmin;
   pointer-events: none;
-}
+} */
 
-@media (prefers-reduced-motion: no-preference) {
+/* @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
   }
@@ -26,13 +385,14 @@
 
 .App-link {
   color: #61dafb;
-}
+} */
 
-@keyframes App-logo-spin {
+/* @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
-}
+} */
