@@ -115,6 +115,7 @@
   border-radius: 8px;
   padding: 0.6rem 2.5rem 0.6rem 1.2rem;
   cursor: pointer;
+  text-align: center;
 
   /* 移除瀏覽器預設樣式 */
   -webkit-appearance: none;
