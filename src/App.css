@@ -57,6 +57,13 @@
   text-align: center; /* 對應 text-center */
 }
 
+/* 【新增】特殊玩家的樣式 */
+.stats-table td.special-player {
+  font-weight: bold; /* 加粗字體 */
+  cursor: pointer;   /* 滑鼠移上去時顯示為可點擊的手指圖示 */
+  color: #b79047;     /* 給予一個特殊的紅色，讓它更突出 */
+}
+
 /* 讓可排序的表頭在滑鼠移上去時顯示為可點擊的手指圖示 */
 .stats-table th.sortable {
   cursor: pointer;
@@ -85,6 +92,14 @@
 /* 滑鼠懸停在表格行 (tr) 上的效果 */
 .stats-table tbody tr:hover {
   background-color: #f9fafb; /* 對應 hover:bg-gray-50 */
+}
+
+/* 【新增】圖片彈窗的樣式 */
+.image-modal-content {
+  background: none;
+  border: none;
+  box-shadow: none;
+  padding: 0;
 }
 
 /* --- 【核心修改】選擇器樣式重構 --- */

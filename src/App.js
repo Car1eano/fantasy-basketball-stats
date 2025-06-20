@@ -24,8 +24,11 @@ function App() {
   
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isHelpModalOpen, setIsHelpModalOpen] = useState(false); // 【新增】使用說明浮動視窗的 State
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false); // 【新增】圖片彈窗的 State
   const modalRef = useRef(null);
-  const helpModalRef = useRef(null); // 【新增】使用說明浮動視窗的 Ref
+  const helpModalRef = useRef(null);
+  const imageModalRef = useRef(null); // 【新增】圖片彈窗的 Ref
+
 
   // --- 資料讀取 Effect ---
   useEffect(() => {
@@ -162,24 +165,23 @@ function App() {
   // 【新增】Effect 來處理點擊外部關閉浮動視窗
   useEffect(() => {
     function handleClickOutside(event) {
-      // 檢查點擊的是否在球員篩選視窗外
-      if (modalRef.current && !modalRef.current.contains(event.target)) {
+      if (isFilterOpen && modalRef.current && !modalRef.current.contains(event.target)) {
         setIsFilterOpen(false);
       }
-      // 檢查點擊的是否在使用說明視窗外
-      if (helpModalRef.current && !helpModalRef.current.contains(event.target)) {
+      if (isHelpModalOpen && helpModalRef.current && !helpModalRef.current.contains(event.target)) {
         setIsHelpModalOpen(false);
       }
+      if (isImageModalOpen && imageModalRef.current && !imageModalRef.current.contains(event.target)) {
+        setIsImageModalOpen(false);
+      }
     }
-    // 只有當任一浮動視窗打開時，才監聽點擊事件
-    if (isFilterOpen || isHelpModalOpen) {
+    if (isFilterOpen || isHelpModalOpen || isImageModalOpen) {
       document.addEventListener("mousedown", handleClickOutside);
     }
-    // 清除監聽器，避免記憶體洩漏
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [isFilterOpen, isHelpModalOpen]);
+  }, [isFilterOpen, isHelpModalOpen, isImageModalOpen]);
 
 
   // --- 事件處理函式 ---
@@ -218,6 +220,13 @@ function App() {
       } else {
           resetToPowerRanking();
       }
+    }
+  };
+
+  // 【新增】點擊特定玩家名稱時觸發的函式
+  const handlePlayerNameClick = (playerName) => {
+    if (playerName === '敢不敢不要比命中率') {
+      setIsImageModalOpen(true);
     }
   };
   
@@ -299,6 +308,15 @@ function App() {
         </div>
       )}
 
+      {/* 【新增】圖片顯示的浮動視窗 */}
+      {isImageModalOpen && (
+        <div className="modal-backdrop" onClick={() => setIsImageModalOpen(false)}>
+          <div className="image-modal-content" ref={imageModalRef} onClick={(e) => e.stopPropagation()}>
+            <img src={'/LebronSunshine.jpg'} alt="彩蛋照片" style={{ maxWidth: '90vw', maxHeight: '90vh', objectFit: 'contain' }} />
+          </div>
+        </div>
+      )}
+
       <div className="table-container">
         <table className="stats-table">
           <thead>
@@ -326,6 +344,21 @@ function App() {
                 {headers.map((header) => {
                   const cellValue = row[header];
                   const isHighlighted = highlightValues[header] === cellValue;
+                  
+                  // 【修改】針對特定玩家和欄位進行特殊處理
+                  if (header === 'player') {
+                    const isSpecialPlayer = cellValue === '敢不敢不要比命中率';
+                    return (
+                      <td 
+                        key={header}
+                        className={`${isHighlighted ? 'highlight-cell' : ''} ${isSpecialPlayer ? 'special-player' : ''}`}
+                        onClick={isSpecialPlayer ? () => handlePlayerNameClick(cellValue) : undefined}
+                      >
+                        {cellValue}
+                      </td>
+                    );
+                  }
+
                   return (
                     <td key={header} className={isHighlighted ? 'highlight-cell' : ''}>
                       {cellValue}
