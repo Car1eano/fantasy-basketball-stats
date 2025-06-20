@@ -87,66 +87,63 @@
   background-color: #f9fafb; /* 對應 hover:bg-gray-50 */
 }
 
-/* 這是「選擇週次」標籤的樣式 */
-/* 更新這個容器，加入 flex 和 gap */
+/* --- 【核心修改】選擇器樣式重構 --- */
+
+/* 1. 將容器改為 Grid 佈局，作為「分層」的基礎 */
 .week-selector-container {
-  display: flex;
+  display: grid;
   align-items: center;
-  gap: 0.75rem; /* 【新增】這會在 label 和選擇器之間產生間隔 */
 }
 
-/* 這是「選擇週次」標籤的樣式 */
-.week-selector-container label {
-  font-family: 'Microsoft JhengHei', '微軟正黑體', 'PingFang TC', '蘋方-繁', sans-serif;
-  font-weight: 600;
-  color: #5D4037;
-  font-size: 1rem;
+/* 2. 建立一個偽元素 ::after 作為獨立的「箭頭層」 */
+.week-selector-container::after {
+  content: '';
+  grid-area: 1 / 1 / 2 / 2; /* 讓箭頭和 select 元素在同一個格子裡 */
+  justify-self: end; /* 【關鍵】將箭頭推到格子的最右邊 */
+  
+  width: 0.8em;
+  height: 0.65em;
+  margin-right:0.5rem; /* 箭頭距離右邊框的距離 */
+  
+  background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%235D4037%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22/%3E%3C/svg%3E');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  
+  pointer-events: none; /* 讓點擊可以“穿透”箭頭，點到下方的 select */
 }
 
-/* 【修改】這是 <select> 下拉選單本身的新樣式，加入了 3D 效果 */
+
+/* 3. 重新設定 select 元素作為「文字與背景層」 */
 .week-selector {
-  /* 字體與顏色 (維持不變) */
+  grid-area: 1 / 1 / 2 / 2; /* 讓它和箭頭在同一個格子裡 */
+
+  /* 字體、邊框和3D效果 (維持不變) */
   font-family: 'Microsoft JhengHei', '微軟正黑體', 'PingFang TC', '蘋方-繁', sans-serif;
   font-weight: 600;
   color: #5D4037;
-
-  /* 外觀與邊框 (維持不變) */
   border: 1px solid #A1887F;
   border-radius: 8px;
-  padding: 0.6rem 2.5rem 0.6rem 1.2rem;
   cursor: pointer;
+  box-shadow: 0 4px 0 #C8B68E;
+  transition: all 0.1s ease-in-out;
+  
+  /* 【關鍵】設定對稱的 padding，讓 text-align: center 能完美置中 */
+  padding: 0.6rem 2rem;
   text-align: center;
+  text-align-last: center; /* 兼容 Firefox */
 
   /* 移除瀏覽器預設樣式 */
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
 
-  /* 【核心修改】將箭頭和漸層分離為兩個背景 */
-  background-image:
-    /* 第1層：箭頭圖示 (保持不變) */
-    url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%235D4037%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22/%3E%3C/svg%3E'),
-    /* 第2層：漸層背景 */
-    linear-gradient(to bottom, #F5E8C7, #E4D4A9);
-
-  background-repeat: no-repeat;
-  /* 分別設定兩個背景的位置 */
-  background-position: right 1rem center, 0 0;
-  /* 分別設定兩個背景的大小 */
-  background-size: 0.8em, 100%;
-
-  /* 3D 效果 */
-  box-shadow: 0 4px 0 #C8B68E;
-  transition: all 0.1s ease-in-out;
+  /* 背景現在只負責漸層 */
+  background-image: linear-gradient(to bottom, #F5E8C7, #E4D4A9);
 }
 
 .week-selector:hover {
-  /* 【核心修改】只更新漸層背景，不影響箭頭 */
-  background-image:
-    /* 第1層：箭頭圖示 (維持不變) */
-    url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%235D4037%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22/%3E%3C/svg%3E'),
-    /* 第2層：新的漸層背景 */
-    linear-gradient(to bottom, #FFF3DB, #F0E2B9);
+  background-image: linear-gradient(to bottom, #FFF3DB, #F0E2B9);
 }
 
 
