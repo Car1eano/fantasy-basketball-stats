@@ -229,19 +229,24 @@
   justify-content: center;
   align-items: center;
   z-index: 1000; /* 確保在最上層 */
+
+  padding: 2rem; /* 【新增】在上下左右都加上 2rem 的固定邊界 */
+  box-sizing: border-box; /* 確保 padding 不會讓元素超出畫面 */
 }
 
 /* 浮動視窗的內容區塊 */
 .modal-content {
   background: #efe9d9; /* 比主背景稍深一點的杏色，創造層次感 */
   color: #333; /* 確保文字是深色的以便閱讀 */
-  padding: 2rem;
+  padding: 1rem;
   border-radius: 8px;
-  border: 1px solid #EAE0C8; /* 搭配的邊框顏色 */
+  border: px solid #EAE0C8; /* 搭配的邊框顏色 */
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
   max-height: 80vh;
+  max-width: 100vh;
   display: flex;
   flex-direction: column;
+  
 }
 
 /* 這是浮動視窗內的球員列表樣式 */
@@ -267,6 +272,7 @@
 /* 這是浮動視窗內的「全部勾選/取消」按鈕容器 */
 .player-filter-actions {
   display: flex;
+  justify-content: center;
   gap: 1rem;
   padding-bottom: 1rem;
   border-bottom: 1px solid #eee;
@@ -333,20 +339,28 @@
 
 /* 使用說明浮動視窗的標題 */
 .modal-title {
-  margin-top: 0;
+  margin: 0;
+  padding: 0.5rem; /* 在這裡設定內距 */
   color: #3E3B3B;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid #eee;
+  /* border-bottom: 1px solid #eee; */
+  flex-shrink: 0; /* 防止頭部被壓縮 */
+}
+
+.help-content {
+  padding: 0.rem; /* 在這裡設定內距 */
+  overflow-y: auto; /* 當內容超出時，顯示垂直滾動條 */
+  flex-grow: 1; /* 讓內容區填滿所有可用空間 */
 }
 
 /* 使用說明內容 */
 .help-content ul {
   padding-left: 20px;
   line-height: 1.6;
+  margin: 0;
 }
 
 .help-content ul li {
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
 }
 
 .help-content ul ul {
@@ -355,10 +369,46 @@
 
 /* 浮動視窗底部的「關閉」按鈕容器 */
 .modal-footer {
-  margin-top: 2rem;
+  margin-top: 0rem;
   text-align: right;
-  border-top: 1px solid #eee;
+  /* border-top: 1px solid #eee; */
   padding-top: 1rem;
+}
+
+/* --- RWD (響應式網頁設計) 樣式 --- */
+
+/* 當螢幕寬度小於或等於 768px 時 (適用於大部分平板與手機)，套用以下樣式 */
+@media (max-width: 768px) {
+
+  /* 調整整體 App 的邊距 */
+  .App {
+    padding: 0.5rem; /* 在小螢幕上減少左右邊距 */
+  }
+
+  /* 讓控制按鈕區塊垂直堆疊 */
+  .controls-container {
+    flex-direction: column; /* 從水平並排變為垂直堆疊 */
+    align-items: stretch;   /* 讓內部項目都撐滿寬度 */
+    gap: 0.75rem;           /* 調整垂直堆疊時的間距 */
+  }
+
+  /* 【新增】讓週次選擇器也撐滿寬度 */
+  .week-selector {
+    width: 100%;
+    text-align: center; /* 文字置中，讓外觀更一致 */
+  }
+
+  /* 調整標題字體大小 */
+  .Title {
+    font-size: 1.8rem; /* 在小螢幕上縮小標題字體 */
+  }
+
+  /* 調整表格內的文字與間距，讓它在小螢幕上更緊湊 */
+  .stats-table th,
+  .stats-table td {
+    padding: 0.4rem 0.5rem; /* 縮小儲存格的內距 */
+    font-size: 0.8rem;    /* 縮小儲存格的字體 */
+  }
 }
 
 /* .App-logo {
